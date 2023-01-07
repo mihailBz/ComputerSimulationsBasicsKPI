@@ -4,7 +4,6 @@ import pandas as pd
 SIMULATION_TIME = 30
 
 INTENSITY = 0.22
-EVENT_INTERVAL = 1 / INTENSITY
 
 Q1_CAPACITY = 9
 Q2_CAPACITY = 3
@@ -102,13 +101,13 @@ def event(env, id, mmo):
     print(f"MMO Exit: Event {id} left MMO {env.now:.2f}")
 
 
-def setup(env):
+def setup(env, intensity, t1, t2, t3):
     """Ініціалізація мережі МО та генереція вимог з заданим інтервалом"""
-    mmo = MMO(env, Q1_CAPACITY, Q2_CAPACITY, T_1, T_2, T_3)
+    mmo = MMO(env, Q1_CAPACITY, Q2_CAPACITY, t1, t2, t3)
 
     i = 0
     while True:
-        yield env.timeout(EVENT_INTERVAL)
+        yield env.timeout(1/intensity)
         i += 1
         print(f"MMO Enter: Event {i} entered MMO at {env.now:.2f}")
         env.process(event(env, i, mmo))
@@ -117,7 +116,7 @@ def setup(env):
 def main():
     env = simpy.Environment()
     print(f"Simulation started at {env.now:.2f}")
-    env.process(setup(env))
+    env.process(setup(env, INTENSITY, T_1, T_2, T_3))
     env.run(until=SIMULATION_TIME)
     print(f"Simulation finished at {env.now:.2f}")
     print("\n\n\n")
